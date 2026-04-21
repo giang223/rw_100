@@ -1,4 +1,8 @@
+import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Main {
     public static void main(String[] args)
@@ -531,6 +535,86 @@ public class Main {
                         i++;
                     }
                 } while(i < accounts.length);
+            }
+        }
+
+        // ---------- Exercise 2 -----------------
+        int a = 5;
+        System.out.printf("%d%n", a);
+
+        int b = 100000000;
+        System.out.printf("%,d%n", b);
+
+        float c = 5.567098f;
+        System.out.printf("%.4f%n", c);
+
+        String name = "Nguyễn Văn A";
+        System.out.printf("Tên tôi là \"%s\" và tôi đang độc thân.%n", name);
+
+        // 5. Lấy thời gian bây giờ và in ra theo định dạng sau:
+        //24/04/2020 11h:16p:20s
+        {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH'h':mm'p':ss's'");
+            System.out.println(now.format(formatter));
+        }
+
+        //6. In ra thông tin account (như Question 8 phần FOREACH) theo định dạng table (giống trong Database)
+        System.out.printf("%-20s | %-20s | %-20s%n", "Email", "Full Name", "Department");
+        System.out.println("-----------------------------------------------------------------------");
+
+        for (Account acc : accounts) {
+            String depName = (acc.department == null) ? "N/A" : acc.department.name;
+            System.out.printf("%-20s | %-20s | %-20s%n", acc.email, acc.fullName, depName);
+        }
+
+        // ---------- Exercise 3 -----------------
+        {
+            // 1.In ra thông tin Exam thứ 1 và property create date sẽ được format theo định dạng vietnamese
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("vi", "VN"));
+            System.out.println("Thông tin Exam 1:");
+            System.out.println("ID: " + ex1.id);
+
+            System.out.println("Ngày tạo: " + ex1.createDate.format(formatter));
+        }
+        {
+            // In ra thông tin: Exam đã tạo ngày nào theo định dạng
+            // Năm – tháng – ngày – giờ – phút – giây
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy – MM – dd – HH – mm – ss");
+            for(Exam ex : exams)
+            {
+                System.out.println("Exam ID: " + ex.id);
+                System.out.println("Ngày tạo: " + ex.createDate.atStartOfDay().format(formatter));
+
+                System.out.println("");
+            }
+        }
+        {
+            // 3.Chỉ in ra năm của create date
+            DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
+            for(Exam ex : exams)
+            {
+                System.out.println("Exam ID: " + ex.id);
+                System.out.println("Năm tạo: " + ex.createDate.format(yearFormatter));
+
+                System.out.println("");
+            }
+        }
+        {
+            DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern("MM/yyyy");
+            // 4.Chỉ in ra tháng và năm của create date
+            for(Exam ex : exams) {
+                System.out.println("Tháng/Năm tạo: " + ex.createDate.format(monthYearFormatter));
+                System.out.println("");
+            }
+        }
+        {
+            // 5.
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+            for(Exam ex : exams)
+            {
+                System.out.println("Tháng-Ngày tạo: " + ex.createDate.format(formatter));
+                System.out.println("");
             }
         }
     }
