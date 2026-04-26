@@ -1,3 +1,5 @@
+package Table;
+
 public class Answer {
     public int id;
     public String content;

@@ -1,3 +1,5 @@
+package Table;
+
 import java.time.LocalDate;
 
 public class Account {
@@ -5,7 +7,7 @@ public class Account {
     public String username;
     public String email;
     public String fullName;
-    Department department;
-    Position position;
-    LocalDate createDate;
+    public Department department;
+    public Position position;
+    public LocalDate createDate;
 }

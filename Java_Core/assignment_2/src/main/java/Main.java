@@ -1,13 +1,19 @@
-import java.text.DateFormat;
+import Exercise.Exercise5;
+import Exercise.Exercise6;
+import Table.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class Main {
     public static void main(String[] args)
     {
-        // 1.Department
+        // 1.Table.Department
         Department dep1 = new Department();
         dep1.id = 1;
         dep1.name = "Sale";
@@ -20,7 +26,7 @@ public class Main {
         dep3.id = 3;
         dep3.name = "IT";
 
-        // 2.Position
+        // 2.Table.Position
         Position pos1 = new Position();
         pos1.id = 1;
         pos1.name = Position.PositionName.DEV;
@@ -33,7 +39,7 @@ public class Main {
         pos3.id = 3;
         pos3.name = Position.PositionName.PM;
 
-        // 3. Account
+        // 3. Table.Account
         Account acc1 = new Account();
         acc1.id = 1;
         acc1.username = "vana";
@@ -61,7 +67,7 @@ public class Main {
         acc3.position = pos3;
         acc3.createDate = LocalDate.of(2022, 5, 20);
 
-        // 4. Group
+        // 4. Table.Group
         Group group1 = new Group();
         group1.id = 1;
         group1.name = "A";
@@ -80,7 +86,7 @@ public class Main {
         group3.creator = acc3;
         group3.createDate = LocalDate.now();
 
-        // 5. Group Account
+        // 5. Table.Group Table.Account
         GroupAccount ga1 = new GroupAccount();
         ga1.group = group1;
         ga1.account = acc3;
@@ -96,7 +102,7 @@ public class Main {
         ga3.account = acc3;
         ga3.joinDate = LocalDate.now();
 
-        // 6. Type Question
+        // 6. Type Table.Question
         TypeQuestion type1 = new TypeQuestion();
         type1.id = 1;
         type1.name = TypeQuestion.TypeQuestionName.ESSAY;
@@ -105,7 +111,7 @@ public class Main {
         type2.id = 2;
         type2.name = TypeQuestion.TypeQuestionName.MULTIPLE_CHOICE;
 
-        // 7. CategoryQuestion
+        // 7. Table.CategoryQuestion
         CategoryQuestion cat1 = new CategoryQuestion();
         cat1.id = 1;
         cat1.name = "Java";
@@ -118,7 +124,7 @@ public class Main {
         cat3.id = 3;
         cat3.name = "Ruby";
 
-        // 8. Question
+        // 8. Table.Question
         Question q1 = new Question();
         q1.id = 1;
         q1.content = "Java là gì?";
@@ -143,7 +149,7 @@ public class Main {
         q3.creator = acc3;
         q3.createDate = LocalDate.now();
 
-        // 9.Answer
+        // 9.Table.Answer
         Answer ans1 = new Answer();
         ans1.id = 1;
         ans1.content = "A";
@@ -162,7 +168,7 @@ public class Main {
         ans3.question = q3;
         ans3.isCorrect = false;
 
-        // 10. Exam
+        // 10. Table.Exam
         Exam ex1 = new Exam();
         ex1.id = 1;
         ex1.code = "A1B2C";
@@ -190,7 +196,7 @@ public class Main {
         ex3.creator = acc3;
         ex3.createDate = LocalDate.now();
 
-        // 11. Exam Question
+        // 11. Table.Exam Table.Question
         ExamQuestion eq1 = new ExamQuestion();
         eq1.exam = ex1;
         eq1.question = q1;
@@ -203,42 +209,42 @@ public class Main {
         eq3.exam = ex3;
         eq3.question = q3;
 
-        Department[] departments = {dep1, dep2, dep3};
-        Position[] positions = {pos1, pos2, pos3};
-        Account[] accounts = {acc1, acc2, acc3};
-        GroupAccount[] groupAccounts = {ga1, ga2, ga3};
-        Group[] groups = {group1, group2, group3};
-        TypeQuestion[] typeQuestions = {type1, type2};
-        CategoryQuestion[] categoryQuestions = {cat1, cat2, cat3};
-        Question[] questions = {q1, q2, q3};
-        Answer[] answers = {ans1, ans2, ans3};
-        Exam[] exams = {ex1, ex2, ex3};
-        ExamQuestion[] examQuestions = { eq1, eq2, eq3};
+        List<Department> departments = new ArrayList<>(Arrays.asList(dep1, dep2, dep3));
+        List<Position> positions = new ArrayList<>(Arrays.asList(pos1, pos2, pos3));
+        List<Account> accounts = new ArrayList<>(Arrays.asList(acc1, acc2, acc3));
+        List<GroupAccount> groupAccounts = new ArrayList<>(Arrays.asList(ga1, ga2, ga3));
+        List<Group> groups = new ArrayList<>(Arrays.asList(group1, group2, group3));
+        List<TypeQuestion> typeQuestions = new ArrayList<>(Arrays.asList(type1, type2));
+        List<CategoryQuestion> categoryQuestions = new ArrayList<>(Arrays.asList(cat1, cat2, cat3));
+        List<Question> questions = new ArrayList<>(Arrays.asList(q1, q2, q3));
+        List<Answer> answers = new ArrayList<>(Arrays.asList(ans1, ans2, ans3));
+        List<Exam> exams = new ArrayList<>(Arrays.asList(ex1, ex2, ex3));
+        List<ExamQuestion> examQuestions = new ArrayList<>(Arrays.asList(eq1, eq2, eq3));
 
         /* 1. Kiểm tra account thứ 2
             Nếu không có phòng ban (tức là department == null) thì sẽ in ra text
             "Nhân viên này chưa có phòng ban"
             Nếu không thì sẽ in ra text "Phòng ban của nhân viên này là …"  */
-        if(accounts[1].department == null)
+        if(accounts.get(1).department == null)
         {
             System.out.println("Nhân viên này chưa có phòng ban");
         }
         else
         {
-            System.out.println("Phòng ban của nhân viên này là " + accounts[1].department.name);
+            System.out.println("Phòng ban của nhân viên này là " + accounts.get(1).department.name);
         }
 
         /* 2. Kiểm tra account thứ 2
             Nếu không có group thì sẽ in ra text "Nhân viên này chưa có group"
-            Nếu có mặt trong 1 hoặc 2 group thì sẽ in ra text "Group của nhân viên này là Java Fresher, C# Fresher"
-            Nếu có mặt trong 3 Group thì sẽ in ra text "Nhân viên này là người quan trọng, tham gia nhiều group"
+            Nếu có mặt trong 1 hoặc 2 group thì sẽ in ra text "Table.Group của nhân viên này là Java Fresher, C# Fresher"
+            Nếu có mặt trong 3 Table.Group thì sẽ in ra text "Nhân viên này là người quan trọng, tham gia nhiều group"
             Nếu có mặt trong 4 group trở lên thì sẽ in ra text "Nhân viên này là người hóng chuyện, tham gia tất cả các group"
         */
         {
             int countGroup = 0;
             for(GroupAccount ga : groupAccounts)
             {
-                if(ga.account == accounts[1])
+                if(ga.account == accounts.get(1))
                     countGroup++;
             }
 
@@ -246,7 +252,7 @@ public class Main {
                 System.out.println("Nhân viên này chưa có group");
 
             else if (countGroup == 1 || countGroup == 2)
-                System.out.println("Group của nhân viên này là Java Fresher, C# Fresher");
+                System.out.println("Table.Group của nhân viên này là Java Fresher, C# Fresher");
 
             else if (countGroup == 3)
                 System.out.println("Nhân viên này là người quan trọng, tham gia nhiều group");
@@ -254,21 +260,21 @@ public class Main {
                 System.out.println("Nhân viên này là người hóng chuyện, tham gia tất cả các group");
         }
 
-        // 3.Sử dụng toán tử ternary để làm Question 1
-        String message = (accounts[1].department == null)
+        // 3.Sử dụng toán tử ternary để làm Table.Question 1
+        String message = (accounts.get(1).department == null)
                 ? "Nhân viên này chưa có phòng ban"
-                : "Phòng ban của nhân viên này là " + accounts[1].department.name;
+                : "Phòng ban của nhân viên này là " + accounts.get(1).department.name;
 
         System.out.println(message);
 
         /* 4.Sử dụng toán tử ternary để làm yêu cầu sau:
-        Kiểm tra Position của account thứ 1
-        Nếu Position = Dev thì in ra text "Đây là Developer"
+        Kiểm tra Table.Position của account thứ 1
+        Nếu Table.Position = Dev thì in ra text "Đây là Developer"
         Nếu không phải thì in ra text "Người này không phải là Developer"
         */
         // Lấy account thứ nhất từ mảng
 
-        String result = (accounts[0].position.name == Position.PositionName.DEV)
+        String result = (accounts.get(0).position.name == Position.PositionName.DEV)
                 ? "Đây là Developer"
                 : "Người này không phải là Developer";
         System.out.println(result);
@@ -281,7 +287,7 @@ public class Main {
             int countAccInGroup = 0;
 
             for (GroupAccount ga : groupAccounts) {
-                if (ga.group == groups[0]) {
+                if (ga.group == groups.get(0)) {
                     countAccInGroup++;
                 }
             }
@@ -302,12 +308,12 @@ public class Main {
             }
         }
 
-        // 6. Sử dụng switch case để làm lại Question 2
+        // 6. Sử dụng switch case để làm lại Table.Question 2
         {
             int countGroup = 0;
             for(GroupAccount ga : groupAccounts)
             {
-                if(ga.account == accounts[1])
+                if(ga.account == accounts.get(1))
                     countGroup++;
             }
             switch (countGroup) {
@@ -316,7 +322,7 @@ public class Main {
                     break;
                 case 1:
                 case 2:
-                    System.out.println("Group của nhân viên này là Java Fresher, C# Fresher");
+                    System.out.println("Table.Group của nhân viên này là Java Fresher, C# Fresher");
                     break;
                 case 3:
                     System.out.println("Nhân viên này là người quan trọng, tham gia nhiều group");
@@ -327,8 +333,8 @@ public class Main {
             }
         }
 
-        // 7.Sử dụng switch case để làm lại Question 4
-        Position.PositionName posName = accounts[0].position.name;
+        // 7.Sử dụng switch case để làm lại Table.Question 4
+        Position.PositionName posName = accounts.get(0).position.name;
 
         switch (posName) {
             case DEV:
@@ -351,67 +357,67 @@ public class Main {
         }
 
         // 10.
-        for (int i = 0; i < accounts.length; i++){
+        for (int i = 0; i < accounts.size(); i++){
             System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-            System.out.println("Email: " + accounts[i].email);
-            System.out.println("Full name: " + accounts[i].fullName);
+            System.out.println("Email: " + accounts.get(i).email);
+            System.out.println("Full name: " + accounts.get(i).fullName);
 
-            String depName = (accounts[i].department == null) ? "Chưa có phòng ban" : accounts[i].department.name;
+            String depName = (accounts.get(i).department == null) ? "Chưa có phòng ban" : accounts.get(i).department.name;
             System.out.println("Phòng ban: " + depName);
 
             System.out.println("");
         }
 
         // 11.
-        for (int i = 0; i < departments.length; i++) {
+        for (int i = 0; i < departments.size(); i++) {
             System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-            System.out.println("Id: " + departments[i].id);
-            System.out.println("Name: " + departments[i].name);
+            System.out.println("Id: " + departments.get(i).id);
+            System.out.println("Name: " + departments.get(i).name);
         }
 
         // 12.
-        for (int i = 0; i < departments.length; i++) {
+        for (int i = 0; i < departments.size(); i++) {
             if (i == 2) {
                 break;
             }
             System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-            System.out.println("Id: " + departments[i].id);
-            System.out.println("Name: " + departments[i].name);
+            System.out.println("Id: " + departments.get(i).id);
+            System.out.println("Name: " + departments.get(i).name);
             System.out.println("");
         }
 
         // 13.
-        for (int i = 0; i < accounts.length; i++) {
+        for (int i = 0; i < accounts.size(); i++) {
             if (i == 1) {
                 i++;
                 continue;
             }
             System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-            System.out.println("Email: " + accounts[i].email);
-            System.out.println("Full name: " + accounts[i].fullName);
+            System.out.println("Email: " + accounts.get(i).email);
+            System.out.println("Full name: " + accounts.get(i).fullName);
             System.out.println("");
         }
 
         // 14.
-        for (int i = 0; i < accounts.length; i++) {
-            if (accounts[i].id < 4) {
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts.get(i).id < 4) {
                 System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-                System.out.println("Email: " + accounts[i].email);
-                System.out.println("Full name: " + accounts[i].fullName);
+                System.out.println("Email: " + accounts.get(i).email);
+                System.out.println("Full name: " + accounts.get(i).fullName);
                 System.out.println("");
             }
         }
 
-        // 16.Làm lại các Question ở phần FOR bằng cách sử dụng WHILE kết hợp với lệnh break, continue
+        // 16.Làm lại các Table.Question ở phần FOR bằng cách sử dụng WHILE kết hợp với lệnh break, continue
         {
             System.out.println("16.");
             {
                 //. Làm lại câu 10
                 int i = 0;
-                while (i < accounts.length) {
+                while (i < accounts.size()) {
                     System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-                    System.out.println("Email: " + accounts[i].email);
-                    System.out.println("Full name: " + accounts[i].fullName);
+                    System.out.println("Email: " + accounts.get(i).email);
+                    System.out.println("Full name: " + accounts.get(i).fullName);
                     System.out.println("");
                     i++;
                 }
@@ -419,23 +425,23 @@ public class Main {
             {
                 //. Làm lại câu 11
                 int i = 0;
-                while(i < departments.length){
+                while(i < departments.size()){
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     i++;
                 }
             }
             {
                 //. Làm lại câu 12
                 int i = 0;
-                while(i < departments.length) {
+                while(i < departments.size()) {
                     if (i == 2) {
                         break;
                     }
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     System.out.println("");
                     i++;
                 }
@@ -443,14 +449,14 @@ public class Main {
             {
                 //. Làm lại câu 13
                 int i = 0;
-                while(i < departments.length) {
+                while(i < departments.size()) {
                     if (i == 2) {
                         i++;
                         continue;
                     }
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     System.out.println("");
                     i++;
                 }
@@ -458,11 +464,11 @@ public class Main {
             {
                 // Làm lại câu 14
                 int i = 0;
-                while(i < accounts.length) {
-                    if (accounts[i].id < 4) {
+                while(i < accounts.size()) {
+                    if (accounts.get(i).id < 4) {
                         System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-                        System.out.println("Email: " + accounts[i].email);
-                        System.out.println("Full name: " + accounts[i].fullName);
+                        System.out.println("Email: " + accounts.get(i).email);
+                        System.out.println("Full name: " + accounts.get(i).fullName);
                         System.out.println("");
                         i++;
                     }
@@ -470,7 +476,7 @@ public class Main {
             }
         }
 
-        // 17.Làm lại các Question ở phần FOR bằng cách sử dụng DO-WHILE kết hợp với lệnh break, continue
+        // 17.Làm lại các Table.Question ở phần FOR bằng cách sử dụng DO-WHILE kết hợp với lệnh break, continue
         System.out.println("17.");
         {
             {
@@ -478,21 +484,21 @@ public class Main {
                 int i = 0;
                 do {
                     System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-                    System.out.println("Email: " + accounts[i].email);
-                    System.out.println("Full name: " + accounts[i].fullName);
+                    System.out.println("Email: " + accounts.get(i).email);
+                    System.out.println("Full name: " + accounts.get(i).fullName);
                     System.out.println("");
                     i++;
-                } while (i < accounts.length);
+                } while (i < accounts.size());
             }
             {
                 //. Làm lại câu 11
                 int i = 0;
                 do {
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     i++;
-                }while(i < departments.length);
+                }while(i < departments.size());
             }
             {
                 //. Làm lại câu 12
@@ -502,11 +508,11 @@ public class Main {
                         break;
                     }
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     System.out.println("");
                     i++;
-                }while(i < departments.length);
+                }while(i < departments.size());
             }
             {
                 //. Làm lại câu 13
@@ -517,24 +523,24 @@ public class Main {
                         continue;
                     }
                     System.out.println("Thông tin department thứ " + (i + 1) + " là:");
-                    System.out.println("Id: " + departments[i].id);
-                    System.out.println("Name: " + departments[i].name);
+                    System.out.println("Id: " + departments.get(i).id);
+                    System.out.println("Name: " + departments.get(i).name);
                     System.out.println("");
                     i++;
-                }while(i < departments.length);
+                }while(i < departments.size());
             }
             {
                 // Làm lại câu 14
                 int i = 0;
                 do {
-                    if (accounts[i].id < 4) {
+                    if (accounts.get(i).id < 4) {
                         System.out.println("Thông tin account thứ " + (i + 1) + " là:");
-                        System.out.println("Email: " + accounts[i].email);
-                        System.out.println("Full name: " + accounts[i].fullName);
+                        System.out.println("Email: " + accounts.get(i).email);
+                        System.out.println("Full name: " + accounts.get(i).fullName);
                         System.out.println("");
                         i++;
                     }
-                } while(i < accounts.length);
+                } while(i < accounts.size());
             }
         }
 
@@ -559,8 +565,8 @@ public class Main {
             System.out.println(now.format(formatter));
         }
 
-        //6. In ra thông tin account (như Question 8 phần FOREACH) theo định dạng table (giống trong Database)
-        System.out.printf("%-20s | %-20s | %-20s%n", "Email", "Full Name", "Department");
+        //6. In ra thông tin account (như Table.Question 8 phần FOREACH) theo định dạng table (giống trong Database)
+        System.out.printf("%-20s | %-20s | %-20s%n", "Email", "Full Name", "Table.Department");
         System.out.println("-----------------------------------------------------------------------");
 
         for (Account acc : accounts) {
@@ -570,20 +576,20 @@ public class Main {
 
         // ---------- Exercise 3 -----------------
         {
-            // 1.In ra thông tin Exam thứ 1 và property create date sẽ được format theo định dạng vietnamese
+            // 1.In ra thông tin Table.Exam thứ 1 và property create date sẽ được format theo định dạng vietnamese
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("vi", "VN"));
-            System.out.println("Thông tin Exam 1:");
+            System.out.println("Thông tin Table.Exam 1:");
             System.out.println("ID: " + ex1.id);
 
             System.out.println("Ngày tạo: " + ex1.createDate.format(formatter));
         }
         {
-            // In ra thông tin: Exam đã tạo ngày nào theo định dạng
+            // In ra thông tin: Table.Exam đã tạo ngày nào theo định dạng
             // Năm – tháng – ngày – giờ – phút – giây
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy – MM – dd – HH – mm – ss");
             for(Exam ex : exams)
             {
-                System.out.println("Exam ID: " + ex.id);
+                System.out.println("Table.Exam ID: " + ex.id);
                 System.out.println("Ngày tạo: " + ex.createDate.atStartOfDay().format(formatter));
 
                 System.out.println("");
@@ -594,7 +600,7 @@ public class Main {
             DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
             for(Exam ex : exams)
             {
-                System.out.println("Exam ID: " + ex.id);
+                System.out.println("Table.Exam ID: " + ex.id);
                 System.out.println("Năm tạo: " + ex.createDate.format(yearFormatter));
 
                 System.out.println("");
@@ -617,5 +623,14 @@ public class Main {
                 System.out.println("");
             }
         }
+
+        // Exercise5.Question1();
+        // Exercise5.Question2();
+        // Exercise5.Question3();
+        // Exercise5.Question5();
+        // Exercise5.question6();
+        // Exercise5.question7();
+        // Exercise5.question9(accounts, groups, groupAccounts);
+        Exercise6.question1();
     }
 }
