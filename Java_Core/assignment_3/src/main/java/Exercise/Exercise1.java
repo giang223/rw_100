@@ -1,4 +1,4 @@
-package Excercise;
+package Exercise;
 
 import Table.Account;
 
