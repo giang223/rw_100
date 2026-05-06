@@ -172,11 +172,8 @@ public class Management {
 
     public void searchAccountByDepartmentName()
     {
-        System.out.println("\n DANH SÁCH PHÒNG BAN ");
-        for (Department dept : departments)
-        {
-            System.out.println(dept);
-        }
+        showDepartments();
+
         System.out.print("Nhập tên phòng ban muốn tìm: ");
         String depName = scanner.nextLine();
         boolean isFound = false;
@@ -198,11 +195,7 @@ public class Management {
 
     public void searchAccountByPositionName()
     {
-        System.out.println("\n DANH SÁCH ChỨC VỤ: ");
-        for(Position pos : positions)
-        {
-            System.out.println(pos);
-        }
+        showPositions();
 
         System.out.println("Nhập tên chức vụ muốn tìm (DEV, TEST, SCRUM_MASTER, PM): ");
         String posName = scanner.nextLine();
