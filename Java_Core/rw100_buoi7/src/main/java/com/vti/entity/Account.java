@@ -1,6 +1,9 @@
 package com.vti.entity;
 
+import com.vti.entity.Position;
+
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Account {
     private int id;
@@ -10,23 +13,20 @@ public class Account {
     private Department department;
     private Position position;
     private LocalDate createDate;
-    public static int ACC_ID=1;
 
     public Account() {
 
     }
 
-    public Account(String username, String fullName, String email, Department department, Position position) {
-        this.id = ACC_ID++;
+    public Account(int id, String username, String fullName, String email, Department department, Position position, LocalDate createDate) {
+        this.id = id;
         this.username = username;
         this.fullName = fullName;
         this.email = email;
         this.department = department;
         this.position = position;
-        this.createDate = LocalDate.now();
+        this.createDate = createDate;
     }
-
-
 
     public int getId() {
         return id;
@@ -82,18 +82,5 @@ public class Account {
 
     public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
-    }
-
-    @Override
-    public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", department=" + department +
-                ", position=" + position +
-                ", createDate=" + createDate +
-                '}';
     }
 }
