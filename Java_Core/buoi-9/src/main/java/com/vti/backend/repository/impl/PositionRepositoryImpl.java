@@ -8,6 +8,7 @@ import com.vti.enums.PositionName;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PositionRepositoryImpl implements IPositionRepository {
     @Override
@@ -94,5 +95,63 @@ public class PositionRepositoryImpl implements IPositionRepository {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean checkExistNameAndIdNot(PositionName name, Integer id) {
+        boolean check = false;
+
+        try
+        {
+            Connection connection = JDBCUtils.getConnection();
+
+            String sql = (Objects.nonNull(id))
+                    ? "SELECT * FROM position WHERE position_name = ? AND position_id != ?"
+                    : "SELECT * FROM position WHERE position_name = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name.name());
+            if (Objects.nonNull(id)) {// check update
+                preparedStatement.setInt(2, id);
+            }
+
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {
+                check = true;
+            }
+
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return check;
+    }
+
+    @Override
+    public boolean checkExistID(int id) {
+        boolean check = false;
+        try {
+            // b1: kết nối đến DB
+            Connection connection = JDBCUtils.getConnection();
+            // b2: lấy dữ liệu từ bảng department
+            String sql = "select * from position where position_id = ? ";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                check = true;
+            }
+            // đóng các kết nối
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
+            e.printStackTrace();// show ra exception
+        }
+
+        return check;
     }
 }

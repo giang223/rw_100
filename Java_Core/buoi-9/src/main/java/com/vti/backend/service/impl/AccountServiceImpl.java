@@ -15,7 +15,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public boolean create(String email, String username, String fullName, int depId, int posId) {
+    public boolean create( String username, String fullName, String email, int depId, int posId) {
         return repository.create(email, username, fullName, depId, posId);
     }
 
@@ -25,8 +25,18 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public boolean update(int id, String updateName, String email, String username, int departmentId, int positionId)
+    public boolean update(int id, String username, String fullName, String email, int departmentId, int positionId)
     {
-        return repository.update(id, updateName, email, username, departmentId, positionId);
+        return repository.update(id, username, fullName, email, departmentId, positionId);
+    }
+
+    @Override
+    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id) {
+        return repository.checkExistUsernameOrEmailAndIdNot(username, email, id);
+    }
+
+    @Override
+    public boolean checkExistID(int id) {
+        return repository.checkExistID(id);
     }
 }

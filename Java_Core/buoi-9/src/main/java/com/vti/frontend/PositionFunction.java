@@ -2,6 +2,7 @@ package com.vti.frontend;
 
 import com.vti.backend.controller.PositionController;
 import com.vti.entity.Position;
+import com.vti.enums.PositionName;
 
 import java.util.List;
 import java.util.Scanner;
@@ -64,45 +65,69 @@ public class PositionFunction {
     public void insertPosition() {
         System.out.println("Chọn tên chức vụ muốn thêm:");
         System.out.println("1. DEV  2. TEST  3. SCRUM_MASTER  4. PM");
-        String name = "";
-        String input = scanner.nextLine();
-        switch (input) {
-            case "1":
-                name = "DEV";
-                break;
-            case "2":
-                name = "TEST";
-                break;
-            case "3":
-                name = "SCRUM_MASTER";
-                break;
-            case "4":
-                name = "PM";
-                break;
-            default:
-                System.out.println("Lựa chọn không hợp lệ!");
-                return;
+        PositionName name = null;
+        String input;
+        while (true)
+        {
+            input = scanner.nextLine();
+            switch (input) {
+                case "1":
+                    name = PositionName.DEV;
+                    break;
+                case "2":
+                    name = PositionName.TEST;
+                    break;
+                case "3":
+                    name = PositionName.SCRUM_MASTER;
+                    break;
+                case "4":
+                    name = PositionName.PM;
+                    break;
+                default:
+                    System.out.println("Lựa chọn không hợp lệ!");
+                    continue;
+            }
+
+            if (controller.checkExistNameAndIdNot(name, null))
+            {
+                System.out.println("Tên này đã được sử dụng, Nhập lại: ");
+                continue;
+            }
+
+            break;
         }
 
-        boolean check = controller.create(name);
+        boolean check = controller.create(name.name());
         if (check) {
-            System.out.println("Thêm chức vụ thành công!");
-        } else {
-            System.out.println("Thêm thất bại!");
+            System.out.println("Thêm mới thành công");
         }
     }
 
     private void deletePosition()
     {
         System.out.print("Nhập ID chức vụ cần xóa: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
+        int id;
+        while(true)
+        {
+            id = scanner.nextInt();
+            scanner.nextLine();
+
+            if (id <= 0 ) {
+                System.out.println("Nhập lai ID: ");
+                continue;
+            }
+
+            if(!controller.checkExistID(id))
+            {
+                System.out.println("ID nay ko ton tai, nhap lai: ");
+                continue;
+            }
+            break;
+        }
 
         boolean check = controller.delete(id);
         if (check) {
-            System.out.println("Xóa thành công!");
-        } else {
-            System.out.println("Xóa thất bại!");
+            System.out.println("Xóa thành công");
         }
     }
 
@@ -114,23 +139,42 @@ public class PositionFunction {
 
         System.out.println("Chọn chức vụ mới:");
         System.out.println("1. DEV  2. TEST  3. SCRUM_MASTER  4. PM");
-        String newName = "";
-        String choice = scanner.nextLine();
-        switch (choice) {
-            case "1": newName = "DEV"; break;
-            case "2": newName = "TEST"; break;
-            case "3": newName = "SCRUM_MASTER"; break;
-            case "4": newName = "PM"; break;
-            default:
-                System.out.println("Lựa chọn không hợp lệ!");
-                return;
+
+        PositionName name = null;
+        String input;
+        while(true)
+        {
+            input = scanner.nextLine();
+
+            switch (input) {
+                case "1":
+                    name = PositionName.DEV;
+                    break;
+                case "2":
+                    name = PositionName.TEST;
+                    break;
+                case "3":
+                    name = PositionName.SCRUM_MASTER;
+                    break;
+                case "4":
+                    name = PositionName.PM;
+                    break;
+                default:
+                    System.out.println("Lựa chọn không hợp lệ!");
+                    continue;
+            }
+
+            if (controller.checkExistNameAndIdNot(name, id))
+            {
+                System.out.println("Tên này đã được sử dụng, Nhập lại: ");
+                continue;
+            }
+            break;
         }
 
-        boolean isSuccess = controller.update(id, newName);
-        if (isSuccess) {
-            System.out.println("Cập nhật thành công!");
-        } else {
-            System.out.println("Cập nhật thất bại!");
+        boolean check = controller.update(id, name.name());
+        if (check) {
+            System.out.println("Update thành công");
         }
     }
 }

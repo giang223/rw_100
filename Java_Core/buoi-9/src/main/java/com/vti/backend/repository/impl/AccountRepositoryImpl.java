@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AccountRepositoryImpl implements IAccountRepository {
     @Override
@@ -55,7 +56,7 @@ public class AccountRepositoryImpl implements IAccountRepository {
     }
 
     @Override
-    public boolean create(String email, String username, String fullName, int depId, int posId) {
+    public boolean create( String username, String fullName, String email, int depId, int posId) {
         try
         {
             Connection connection = JDBCUtils.getConnection();
@@ -97,13 +98,13 @@ public class AccountRepositoryImpl implements IAccountRepository {
     }
 
     @Override
-    public boolean update(int id, String updateName, String email, String username, int departmentId, int positionId)
+    public boolean update(int id, String username, String fullName, String email, int departmentId, int positionId)
     {
         try {
             Connection connection = JDBCUtils.getConnection();
             String sql = "UPDATE ACCOUNT SET full_name = ?, email = ?, username = ?, department_id = ?, position_id = ? WHERE account_id = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, updateName);
+            preparedStatement.setString(1, fullName);
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, username);
             preparedStatement.setInt(4, departmentId);
@@ -117,5 +118,62 @@ public class AccountRepositoryImpl implements IAccountRepository {
             e.printStackTrace();// show ra exception
         }
         return false;
+    }
+
+    @Override
+    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id) {
+        boolean check = false;
+        try
+        {
+            Connection connection = JDBCUtils.getConnection();
+            String sql = (Objects.nonNull(id))
+                    ? "SELECT * FROM account WHERE (username = ? OR email = ?) AND account_id != ?"
+                    : "SELECT * FROM account WHERE username = ? OR email = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, email);
+            if (Objects.nonNull(id)) {// check update
+                preparedStatement.setInt(3, id);
+            }
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                check = true;
+            }
+
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return check;
+    }
+
+    @Override
+    public boolean checkExistID(int id) {
+        boolean check = false;
+
+        try
+        {
+            Connection connection = JDBCUtils.getConnection();
+
+            String sql = "SELECT * FROM account WHERE account_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                check = true;
+            }
+            // đóng các kết nối
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return check;
     }
 }

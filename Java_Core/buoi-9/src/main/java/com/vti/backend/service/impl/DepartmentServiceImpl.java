@@ -29,4 +29,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
     public boolean update(int id, String name) {
         return repository.update(id, name);
     }
+
+    @Override
+    public boolean checkExistNameAndIdNot(String name, Integer id) {
+        return repository.checkExistNameAndIdNot(name, id);
+    }
+
+    @Override
+    public boolean checkExistID(Integer id) {
+        return repository.checkExistID(id);
+    }
 }
