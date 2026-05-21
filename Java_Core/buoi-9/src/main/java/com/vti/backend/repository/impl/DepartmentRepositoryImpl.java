@@ -2,7 +2,7 @@ package com.vti.backend.repository.impl;
 
 import com.vti.backend.repository.IDepartmentRepository;
 import com.vti.entity.Department;
-import com.vti.enums.JDBCUtils;
+import com.vti.utils.JDBCUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,16 +13,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class DepartmentRepositoryImpl implements IDepartmentRepository {
+    private static  Connection connection;
+    private static PreparedStatement preparedStatement;
+    private static Statement statement;
+    private static ResultSet rs;
     @Override
     public List<Department> findAll() {
         List<Department> departments = new ArrayList<>();// lưu lại dữ liệu lấy từ DB
         try {
             // b1: kết nối đến DB
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             // b2: lấy dữ liệu từ bảng department
             String sql = "select * from department;";
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(sql);// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
             while (rs.next()) {// lặp qua qua từng dòng của rs
                 int id = rs.getInt("department_id");// lấy giá trị từ cloumn department_id
                 String name = rs.getString("department_name");//lấy giá trị từ cloumn department_name
@@ -33,6 +37,9 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            JDBCUtils.closeConnection(connection, statement, rs);
+        }
         return departments;
     }
 
@@ -40,17 +47,19 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
     public boolean create(String name) {
         try {
 
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
 
             String sql = "insert into department (department_name) values (?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, name);
-            int c = statement.executeUpdate();// trả ra số row thay đổi trong DB
-            JDBCUtils.closeConnection(connection, statement, null);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            int c = preparedStatement.executeUpdate();// trả ra số row thay đổi trong DB
             // c= 0
             return c > 0;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
         return false;
     }
@@ -59,23 +68,20 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
     public boolean delete(int id) {
         try {
             // b1: kết nối đến DB
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             // b2: xóa department
             String sql = "delete from department where department_id = ?;";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
             // thực thi câu sql
-            int c = statement.executeUpdate();// trả ra số row thay đổi trong DB
-//            if (c>0) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-            JDBCUtils.closeConnection(connection, statement, null);
+            int c = preparedStatement.executeUpdate();// trả ra số row thay đổi trong DB
             // c= 0
             return c > 0;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
         return false;
     }
@@ -84,19 +90,21 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
     public boolean update(int id, String name) {
         try {
             // b1: kết nối đến DB
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             // b2: update department
             String sql = "update department set department_name = ? where department_id = ?;";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, name);
-            statement.setInt(2, id);
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, id);
             // thực thi câu sql
-            int c = statement.executeUpdate();// trả ra số row thay đổi trong DB
-            JDBCUtils.closeConnection(connection, statement, null);
+            int c = preparedStatement.executeUpdate();// trả ra số row thay đổi trong DB
             // c= 0
             return c > 0;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
         return false;
     }
@@ -106,11 +114,11 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
         boolean check = false;
         try {
             // b1: kết nối đến DB
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             // b2: lấy dữ liệu từ bảng department
             String sql = "select * from department where department_id = ? ";
 
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, id);
 
             ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
@@ -118,9 +126,11 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
                 check = true;
             }
             // đóng các kết nối
-            JDBCUtils.closeConnection(connection, preparedStatement, rs);
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
         }
         return check;
     }
@@ -130,13 +140,13 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
         boolean check = false;
         try {
             // b1: kết nối đến DB
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             // b2: lấy dữ liệu từ bảng department
             String sql = "select * from department where department_name like ? ";
             if (Objects.nonNull(id)) {// check update
                 sql += "and department_id != ? ";
             }
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
             if (Objects.nonNull(id)) {// check update
                 preparedStatement.setInt(2, id);
@@ -147,9 +157,11 @@ public class DepartmentRepositoryImpl implements IDepartmentRepository {
                 check = true;
             }
             // đóng các kết nối
-            JDBCUtils.closeConnection(connection, preparedStatement, rs);
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
         }
         return check;
     }

@@ -4,7 +4,7 @@ import com.vti.backend.repository.IAccountRepository;
 import com.vti.entity.Account;
 import com.vti.entity.Department;
 import com.vti.entity.Position;
-import com.vti.enums.JDBCUtils;
+import com.vti.utils.JDBCUtils;
 import com.vti.enums.PositionName;
 
 import java.sql.Connection;
@@ -17,18 +17,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class AccountRepositoryImpl implements IAccountRepository {
+    private static Connection connection;
+    private static Statement statement;
+    private static PreparedStatement preparedStatement;
+    private static ResultSet rs;
+
     @Override
     public List<Account> findAll() {
         List<Account> accounts = new ArrayList<>();
         try {
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
 
             String sql = "SELECT a.*, d.department_name, p.position_name " +
                     "FROM `account` a " +
                     "LEFT JOIN department d on a.department_id = d.department_id " +
                     "LEFT JOIN position p on a.position_id = p.position_id;";
-            Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(sql);
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);
 
             while(rs.next())
             {
@@ -47,11 +52,12 @@ public class AccountRepositoryImpl implements IAccountRepository {
 
                 accounts.add(account);
             }
-            JDBCUtils.closeConnection(connection, statement, rs);
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } finally {
+            JDBCUtils.closeConnection(connection, statement, rs);
 
+        }
         return accounts;
     }
 
@@ -59,9 +65,9 @@ public class AccountRepositoryImpl implements IAccountRepository {
     public boolean create( String username, String fullName, String email, int depId, int posId) {
         try
         {
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             String sql = "INSERT INTO account (email, username, full_name, department_id, position_id) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, email);
             preparedStatement.setString(2, username);
             preparedStatement.setString(3, fullName);
@@ -69,12 +75,14 @@ public class AccountRepositoryImpl implements IAccountRepository {
             preparedStatement.setInt(5, posId);
 
             int c = preparedStatement.executeUpdate();
-            JDBCUtils.closeConnection(connection, preparedStatement, null);
 
             return c > 0;
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
 
         return false;
@@ -83,17 +91,19 @@ public class AccountRepositoryImpl implements IAccountRepository {
     @Override
     public boolean delete(int id) {
         try {
-            Connection connection = JDBCUtils.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM account WHERE account_id = ?");
+            connection = JDBCUtils.getConnection();
+            preparedStatement = connection.prepareStatement("DELETE FROM account WHERE account_id = ?");
             preparedStatement.setInt(1, id);
 
             int c = preparedStatement.executeUpdate();
-            JDBCUtils.closeConnection(connection, preparedStatement, null);
             // c= 0
             return c > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
     }
 
@@ -101,9 +111,9 @@ public class AccountRepositoryImpl implements IAccountRepository {
     public boolean update(int id, String username, String fullName, String email, int departmentId, int positionId)
     {
         try {
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
             String sql = "UPDATE ACCOUNT SET full_name = ?, email = ?, username = ?, department_id = ?, position_id = ? WHERE account_id = ?;";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, fullName);
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, username);
@@ -112,42 +122,14 @@ public class AccountRepositoryImpl implements IAccountRepository {
             preparedStatement.setInt(6, id);
 
             int c = preparedStatement.executeUpdate();// executeUpdate sẽ trả về 1 số nguyên, đại diện cho số dòng bị thay đổi trong DB
-            JDBCUtils.closeConnection(connection, preparedStatement, null);
             return c > 0;
         } catch (Exception e) {// show các lỗi lien quan đén logic xử lý
             e.printStackTrace();// show ra exception
         }
-        return false;
-    }
-
-    @Override
-    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id) {
-        boolean check = false;
-        try
-        {
-            Connection connection = JDBCUtils.getConnection();
-            String sql = (Objects.nonNull(id))
-                    ? "SELECT * FROM account WHERE (username = ? OR email = ?) AND account_id != ?"
-                    : "SELECT * FROM account WHERE username = ? OR email = ?";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, email);
-            if (Objects.nonNull(id)) {// check update
-                preparedStatement.setInt(3, id);
-            }
-            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
-            if (rs.next()) {// lặp qua qua từng dòng của rs
-                check = true;
-            }
-
-            JDBCUtils.closeConnection(connection, preparedStatement, rs);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
         }
-
-        return check;
+        return false;
     }
 
     @Override
@@ -156,24 +138,77 @@ public class AccountRepositoryImpl implements IAccountRepository {
 
         try
         {
-            Connection connection = JDBCUtils.getConnection();
+            connection = JDBCUtils.getConnection();
 
             String sql = "SELECT * FROM account WHERE account_id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, id);
 
-            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
             if (rs.next()) {// lặp qua qua từng dòng của rs
                 check = true;
             }
-            // đóng các kết nối
-            JDBCUtils.closeConnection(connection, preparedStatement, rs);
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }
 
         return check;
     }
+
+    @Override
+    public boolean checkUsernameExist(String username, Integer id) {
+        boolean checkUsernameExist = false;
+        try {
+            // b1: kết nối đến DB
+            connection = JDBCUtils.getConnection();
+
+            String sql =  "select * from account where username like ? and (account_id != ? or ? is null);";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setInt(2, id);
+            preparedStatement.setInt(3, id);
+
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                checkUsernameExist = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }
+        return checkUsernameExist;
+    }
+
+    @Override
+    public boolean checkEmailExist(String email) {
+        boolean checkEmailExist = false;
+        try {
+            // b1: kết nối đến DB
+            connection = JDBCUtils.getConnection();
+            // b2: lấy dữ liệu từ bảng account
+            String sql = "select * from account where email like ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, email);
+
+            ResultSet rs = preparedStatement.executeQuery();// thực thi câu lệnh sql và gán bảng trả ra vào ResultSet rs
+            if (rs.next()) {// lặp qua qua từng dòng của rs
+                checkEmailExist = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, rs);
+        }
+        return checkEmailExist;
+    }
+
+
 }

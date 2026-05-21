@@ -11,6 +11,7 @@ public interface IAccountRepository {
     boolean delete(int id);
     boolean update(int id, String username, String fullName, String email, int departmentId, int positionId);
 
-    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id);
-    public boolean checkExistID(int id);
+    boolean checkUsernameExist(String username, Integer id);
+    boolean checkEmailExist(String email);
+    boolean checkExistID(int id);
 }

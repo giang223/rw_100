@@ -28,9 +28,13 @@ public class AccountController {
     {
         return service.update(id, updateName, email, username, departmentId, positionId);
     }
-    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id)
-    {
-        return service.checkExistUsernameOrEmailAndIdNot(username, email, id);
+
+    public boolean checkUsernameExist(String username, Integer id) {
+        return service.checkUsernameExist(username, id);
+    }
+
+    public boolean checkEmailExist(String email) {
+        return service.checkEmailExist(email);
     }
 
     public boolean checkExistID(int id)

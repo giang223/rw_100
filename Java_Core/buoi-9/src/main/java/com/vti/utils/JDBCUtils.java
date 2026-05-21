@@ -1,4 +1,4 @@
-package com.vti.enums;
+package com.vti.utils;
 
 import java.sql.*;
 
@@ -12,9 +12,7 @@ public class JDBCUtils {
             // b1: kết nối đến DB
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, username, password);
-//            if (connection != null) {
-//                System.out.println("Kết nối DB thành công");
-//            }
+
             return connection;
         } catch (Exception e) {
             System.out.println("Kết nối DB ko thành công");
@@ -24,16 +22,29 @@ public class JDBCUtils {
 
     // close cho 3 interface connection,statement,rs
     public static void closeConnection
-    (Connection connection, Statement statement, ResultSet rs) throws SQLException {
-        // nếu cái nào có dữ liệu (đang mở) != null
-        if (connection != null) {
-            connection.close();
+    (Connection connection, Statement statement, ResultSet rs){
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        if (statement != null) {
-            statement.close();
+
+        try {
+            if (statement != null) {
+                statement.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        if (rs != null) {
-            rs.close();
+
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -29,10 +29,14 @@ public class AccountServiceImpl implements IAccountService {
     {
         return repository.update(id, username, fullName, email, departmentId, positionId);
     }
+    @Override
+    public boolean checkUsernameExist(String username,  Integer id) {
+        return repository.checkUsernameExist(username, id);
+    }
 
     @Override
-    public boolean checkExistUsernameOrEmailAndIdNot(String username, String email, Integer id) {
-        return repository.checkExistUsernameOrEmailAndIdNot(username, email, id);
+    public boolean checkEmailExist(String email) {
+        return repository.checkEmailExist(email);
     }
 
     @Override
