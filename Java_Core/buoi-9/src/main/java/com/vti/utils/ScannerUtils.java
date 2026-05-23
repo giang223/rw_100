@@ -5,6 +5,9 @@ import java.util.Scanner;
 
 public class ScannerUtils {// ho tro nhapp + validation du lieu
     private static Scanner scanner = new Scanner(System.in);
+    public static final String EMAIL_REGEX = "^[a-zA-Z0-9_+.-]+@[a-zA-Z0-9.-]+$";
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
+    public static final Integer ZERO = 0;
 
     public static String inputString() {
         String text;
@@ -48,7 +51,7 @@ public class ScannerUtils {// ho tro nhapp + validation du lieu
             email = ScannerUtils.inputString();
 
             // bieu thuc chinh quy
-            String regex = "^[a-zA-Z0-9_+.-]+@[a-zA-Z0-9.-]+$";
+            String regex = EMAIL_REGEX;
             if (!email.matches(regex)) {
                 System.out.println("Sai định dạng email. Nhập lại:");
             } else  {

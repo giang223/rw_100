@@ -41,4 +41,6 @@ public class AccountController {
     {
         return service.checkExistID(id);
     }
+
+    public String importAccountFromCSV(String pathName) {return service.importAccountFromCSV(pathName);}
 }

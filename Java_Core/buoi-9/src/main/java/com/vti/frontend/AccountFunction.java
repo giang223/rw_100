@@ -27,7 +27,8 @@ public class AccountFunction {
             System.out.println("| 2. Thêm mới tài khoản                       |");
             System.out.println("| 3. Cập nhật Phòng ban/Chức vụ (theo ID)     |");
             System.out.println("| 4. Xóa tài khoản (theo Username)            |");
-            System.out.println("| 5. Thoát                                    |");
+            System.out.println("  5. Import file CSV                          |");
+            System.out.println("| 6. Thoát                                    |");
             System.out.println("===============================================");
             System.out.print("Mời bạn chọn chức năng (1-5): ");
             String choice = scanner.nextLine();
@@ -46,12 +47,24 @@ public class AccountFunction {
                     deleteAccount();
                     break;
                 case "5":
+                    importAccountFromCSV();
+                    break;
+                case "6":
                     System.out.println("Thoát!");
                     return;
                 default:
                     System.out.println("Lựa chọn không hợp lệ, vui lòng chọn lại!");
             }
         }
+    }
+
+    private void importAccountFromCSV() {
+        System.out.println("=== Import file CSV ===");
+        System.out.println("Mời bạn nhập đường dẫn đến file:");
+
+        String pathName = scanner.nextLine();
+        String message = accountController.importAccountFromCSV(pathName);
+        System.out.println(message);
     }
 
     public void showAccounts(List<Account> accounts) {

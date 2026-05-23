@@ -161,6 +161,32 @@ public class AccountRepositoryImpl implements IAccountRepository {
     }
 
     @Override
+    public boolean createListAccount(List<Account> list) {
+        try {
+            connection = JDBCUtils.getConnection();
+            String sql = "INSERT IGNORE INTO account (email, username, full_name, department_id, position_id) VALUES (?, ?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(sql);
+            for (Account account : list) {
+                preparedStatement.setString(1, account.getEmail());
+                preparedStatement.setString(2, account.getUsername());
+                preparedStatement.setString(3, account.getFullName());
+                preparedStatement.setInt(4, account.getDepartment().getId());
+                preparedStatement.setInt(5, account.getPosition().getId());
+
+                preparedStatement.addBatch();
+            }
+
+            preparedStatement.executeBatch();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeConnection(connection, preparedStatement, null);
+        }
+        return false;
+    }
+
+    @Override
     public boolean checkUsernameExist(String username, Integer id) {
         boolean checkUsernameExist = false;
         try {

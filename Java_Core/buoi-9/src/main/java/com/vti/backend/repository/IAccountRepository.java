@@ -14,4 +14,6 @@ public interface IAccountRepository {
     boolean checkUsernameExist(String username, Integer id);
     boolean checkEmailExist(String email);
     boolean checkExistID(int id);
+
+    boolean createListAccount(List<Account> list);
 }

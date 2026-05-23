@@ -20,7 +20,8 @@ public class DepartmentFunction {
             System.out.println("3. Update phòng ban");
             System.out.println("4. Xóa phòng ban");
             System.out.println("5. Tìm kiếm phòng ban");
-            System.out.println("6. Thoát");
+            System.out.println("6. Import file CSV");
+            System.out.println("7. Thoát");
 
             String choice = scanner.nextLine();
             switch (choice) {
@@ -36,6 +37,9 @@ public class DepartmentFunction {
                     break;
                 case "4":
                     deleteDepartment();
+                    break;
+                case "6":
+                    importDepartmentFromCSV();
                     break;
                 default:
                     System.out.println("Chọn sai, chọn lại!");
@@ -134,4 +138,12 @@ public class DepartmentFunction {
         }
     }
 
+    public void importDepartmentFromCSV() {
+        System.out.println("=== Import file CSV ===");
+        System.out.println("Mời bạn nhập đường dẫn đến file:");
+
+        String pathName = scanner.nextLine();
+        String message = departmentController.importDepartmentFromCSV(pathName);
+        System.out.println(message);
+    }
 }

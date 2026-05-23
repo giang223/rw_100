@@ -28,6 +28,15 @@ public class Account {
         this.createDate = createDate;
     }
 
+    public Account( String username, String fullName, String email, Department department, Position position, LocalDate createDate) {
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.department = department;
+        this.position = position;
+        this.createDate = createDate;
+    }
+
     public int getId() {
         return id;
     }
