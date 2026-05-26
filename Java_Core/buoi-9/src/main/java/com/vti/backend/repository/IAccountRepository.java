@@ -1,12 +1,14 @@
 package com.vti.backend.repository;
 
 import com.vti.entity.Account;
-import com.vti.entity.Department;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAccountRepository {
     List<Account> findAll();
+    Map<String,Account> mapByUsername();
+    Map<String,Account> mapByEmail();
     boolean create( String username, String fullName, String email, int depId, int posId);
     boolean delete(int id);
     boolean update(int id, String username, String fullName, String email, int departmentId, int positionId);

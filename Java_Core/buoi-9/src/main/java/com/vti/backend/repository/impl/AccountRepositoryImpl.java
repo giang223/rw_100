@@ -12,9 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class AccountRepositoryImpl implements IAccountRepository {
     private static Connection connection;
@@ -51,6 +49,84 @@ public class AccountRepositoryImpl implements IAccountRepository {
                 Account account = new Account(id, username, fullName, email, new Department(departmentId, departmentName), new Position(positionId, positionName), createDate);
 
                 accounts.add(account);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeConnection(connection, statement, rs);
+
+        }
+        return accounts;
+    }
+
+    @Override
+    public Map<String, Account> mapByUsername() {
+        Map<String, Account> accounts = new HashMap<>();
+        try {
+            connection = JDBCUtils.getConnection();
+
+            String sql = "SELECT a.*, d.department_name, p.position_name " +
+                    "FROM `account` a " +
+                    "LEFT JOIN department d on a.department_id = d.department_id " +
+                    "LEFT JOIN position p on a.position_id = p.position_id;";
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);
+
+            while(rs.next())
+            {
+                int id = rs.getInt("account_id");
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int departmentId = rs.getInt("department_id");
+                String departmentName = rs.getString("department_name");
+                int positionId = rs.getInt("position_id");
+                String name = rs.getString("position_name");
+                PositionName positionName = PositionName.valueOf(name);
+                LocalDate createDate = rs.getDate("create_date").toLocalDate();
+
+                Account account = new Account(id, username, fullName, email, new Department(departmentId, departmentName), new Position(positionId, positionName), createDate);
+
+                accounts.put(username, account);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeConnection(connection, statement, rs);
+
+        }
+        return accounts;
+    }
+
+    @Override
+    public Map<String, Account> mapByEmail() {
+        Map<String, Account> accounts = new HashMap<>();
+        try {
+            connection = JDBCUtils.getConnection();
+
+            String sql = "SELECT a.*, d.department_name, p.position_name " +
+                    "FROM `account` a " +
+                    "LEFT JOIN department d on a.department_id = d.department_id " +
+                    "LEFT JOIN position p on a.position_id = p.position_id;";
+            statement = connection.createStatement();
+            rs = statement.executeQuery(sql);
+
+            while(rs.next())
+            {
+                int id = rs.getInt("account_id");
+                String username = rs.getString("username");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int departmentId = rs.getInt("department_id");
+                String departmentName = rs.getString("department_name");
+                int positionId = rs.getInt("position_id");
+                String name = rs.getString("position_name");
+                PositionName positionName = PositionName.valueOf(name);
+                LocalDate createDate = rs.getDate("create_date").toLocalDate();
+
+                Account account = new Account(id, username, fullName, email, new Department(departmentId, departmentName), new Position(positionId, positionName), createDate);
+
+                accounts.put(email, account);
             }
         } catch (Exception e) {
             e.printStackTrace();

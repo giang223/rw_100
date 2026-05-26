@@ -1,0 +1,2 @@
+username,fullName,email,department_id,position_id,error_message
+username1,full_name1,email1,1,5 : Định dạng email không hợp lệ|Không tìm thấy Chức vụ nào có ID này 

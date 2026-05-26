@@ -4,6 +4,7 @@ import com.vti.entity.Account;
 import com.vti.entity.Department;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAccountService {
     List<Account> findAll();

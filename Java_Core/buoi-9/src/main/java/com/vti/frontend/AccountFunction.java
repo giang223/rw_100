@@ -30,7 +30,7 @@ public class AccountFunction {
             System.out.println("  5. Import file CSV                          |");
             System.out.println("| 6. Thoát                                    |");
             System.out.println("===============================================");
-            System.out.print("Mời bạn chọn chức năng (1-5): ");
+            System.out.print("Mời bạn chọn chức năng (1-6): ");
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
