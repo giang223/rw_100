@@ -41,6 +41,8 @@ public class DepartmentFunction {
                 case "6":
                     importDepartmentFromCSV();
                     break;
+                case "7":
+                    return;
                 default:
                     System.out.println("Chọn sai, chọn lại!");
 
@@ -142,7 +144,7 @@ public class DepartmentFunction {
         System.out.println("=== Import file CSV ===");
         System.out.println("Mời bạn nhập đường dẫn đến file:");
 
-        String pathName = scanner.nextLine();
+        String pathName = "E:\\VTI_IT\\Java_Core\\csv\\input_department.csv";
         String message = departmentController.importDepartmentFromCSV(pathName);
         System.out.println(message);
     }

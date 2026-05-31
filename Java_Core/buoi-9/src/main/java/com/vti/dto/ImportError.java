@@ -2,25 +2,25 @@ package com.vti.dto;
 
 import java.util.List;
 
-public class ImportError {
-    private String line;
+public class ImportError<T> {
+    private T csv;
     private List<String> message;
 
     public ImportError()
     {
     }
 
-    public ImportError(String line, List<String> message) {
-        this.line = line;
+    public ImportError(T line, List<String> message) {
+        this.csv = line;
         this.message = message;
     }
 
-    public String getLine() {
-        return line;
+    public T getCsv() {
+        return csv;
     }
 
-    public void setLine(String line) {
-        this.line = line;
+    public void setCsv(T csv) {
+        this.csv = csv;
     }
 
     public List<String> getMessage() {

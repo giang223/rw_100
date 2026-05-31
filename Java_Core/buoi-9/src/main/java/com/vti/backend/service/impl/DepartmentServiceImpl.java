@@ -4,6 +4,8 @@ import com.vti.backend.repository.IDepartmentRepository;
 import com.vti.backend.repository.impl.DepartmentRepositoryImpl;
 import com.vti.backend.service.IDepartmentService;
 import com.vti.dto.ImportError;
+import com.vti.dto.context.DepartmentContext;
+import com.vti.dto.csv.DepartmentCsv;
 import com.vti.entity.Department;
 
 import java.io.*;
@@ -44,47 +46,40 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public String importDepartmentFromCSV(String pathName) {
-        if (!pathName.endsWith(".csv")) {
-            return "Định dạng file không đúng";
-        }
+        String pathError = "src/main/java/com/vti/dto/output_error_department.csv";
 
         Map<String, Department> mapByName = repository.mapByName();
-        List<Department> departments = new ArrayList<>();
-        List<ImportError> importErrors = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(pathName))) {
-            String line = br.readLine();
-
-            while ((line = br.readLine()) != null) {
-                validation(line, mapByName, departments, importErrors);
-            }
-
-            if (!departments.isEmpty()) {
-                repository.createListDepartment(departments);
-            }
-
-            if (!importErrors.isEmpty()) {
-                String pathError = "src/main/java/com/vti/dto/output_error_department.csv";
-                exportFileCSV(importErrors, pathError);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        DepartmentContext context = new DepartmentContext(mapByName);
+        if (mapByName != null) {
+            cleanMap(mapByName);
         }
-
-        String message = "";
-        if (importErrors.isEmpty()) {
-            message = "Import thành công";
-        } else if (departments.isEmpty()) {
-            message = "Import ko thành công, đã xuất file lỗi tại src/main/java/com/vti/dto/output_error_department.csv";
-        } else {
-            message = "Import thành công " + departments.size() + " phòng ban, " +
-                    "đã xuất lỗi ra file tại src/main/java/com/vti/dto/output_error_department.csv";
-        }
+        String message = this.importFileCSV(pathName, context, pathError);
 
         return message;
     }
 
-    private void exportFileCSV(List<ImportError> importErrors, String pathError)
+    private void cleanMap(Map<String, Department> map)
+    {
+        Map<String, Department> updatedEntries = new HashMap<>();
+
+        for (Map.Entry<String, Department> entry : map.entrySet()) {
+            String rawKey = entry.getKey();
+            Department dep = entry.getValue();
+
+            dep.setName(java.text.Normalizer.normalize(dep.getName().trim(), java.text.Normalizer.Form.NFC));
+
+            String cleanKey = java.text.Normalizer.normalize(rawKey.trim(), java.text.Normalizer.Form.NFC);
+
+            if (!rawKey.equals(cleanKey)) {
+                updatedEntries.put(cleanKey, dep);
+            }
+        }
+
+        map.putAll(updatedEntries);
+    }
+
+    @Override
+    public void exportFileError(List<ImportError<DepartmentCsv>> importErrors, String pathError)
     {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(pathError));
@@ -92,7 +87,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
             bw.newLine();
 
             for (ImportError error : importErrors) {
-                String ln = error.getLine() + "," + String.join("|", error.getMessage());
+                String ln = error.getCsv().toString() + "," + String.join("|", error.getMessage());
                 bw.write(ln);
                 bw.newLine();
             }
@@ -104,11 +99,12 @@ public class DepartmentServiceImpl implements IDepartmentService {
         }
     }
 
-    private void validation(String line, Map<String, Department> mapByName, List<Department> departments, List<ImportError> importErrors)
+    @Override
+    public void validation(String line, DepartmentContext context, List<Department> entities, List<ImportError<DepartmentCsv>> importErrors)
     {
         List<String> errors = new ArrayList<>();
 
-        String[] fields = line.split(",");
+        String[] fields = line.split(",", -1);
         String departmentName = fields[0];
 
         // 1. Validation
@@ -116,17 +112,23 @@ public class DepartmentServiceImpl implements IDepartmentService {
             errors.add("Tên phòng ban ko được để trống");
         } else if (departmentName.length() > 100) {
             errors.add("Tên phòng ban ko được dài quá 100 kí tự");
-        } else if (mapByName.get(departmentName) != null) {
+        } else if (context.getMapByName().get(departmentName) != null) {
             errors.add("Tên phòng ban đã tồn tại");
         }
 
         if (errors.isEmpty()) {
             Department dep = new Department(departmentName);
-            departments.add(dep);
-            mapByName.put(departmentName, dep);
+            entities.add(dep);
+            context.getMapByName().put(departmentName, dep);
         } else {
-            ImportError importerError = new ImportError(line, errors);
-            importErrors.add(importerError);
+            DepartmentCsv csv = new DepartmentCsv(departmentName);
+            ImportError importError = new ImportError(csv, errors);
+            importErrors.add(importError);
         }
+    }
+
+    @Override
+    public void saveAll(List<Department> entities) {
+        repository.createListDepartment(entities);
     }
 }

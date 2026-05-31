@@ -8,6 +8,8 @@ import com.vti.backend.repository.impl.DepartmentRepositoryImpl;
 import com.vti.backend.repository.impl.PositionRepositoryImpl;
 import com.vti.backend.service.IAccountService;
 import com.vti.dto.ImportError;
+import com.vti.dto.context.AccountContext;
+import com.vti.dto.csv.AccountCsv;
 import com.vti.entity.Account;
 import com.vti.entity.Department;
 import com.vti.entity.Position;
@@ -60,61 +62,28 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public String importAccountFromCSV(String pathName) {
-        if (!pathName.endsWith(".csv")) {
-            return "Định dạng file không đúng";
-        }
 
-        List<Account> accounts = new ArrayList<>();
-        List<Department> departments = departmentRepository.findAll();
-        List<Position> positions = positionRepository.findAll();
+        String pathError = "src/main/java/com/vti/dto/output_error_account.csv";
+
         Map<String, Account> mapByUsername = accountRepository.mapByUsername();
         Map<String, Account> mapByEmail = accountRepository.mapByEmail();
-        List<ImportError> importErrors = new ArrayList<>();
+        List<Department> departments = departmentRepository.findAll();
+        List<Position> positions = positionRepository.findAll();
+        AccountContext context = new AccountContext(mapByUsername, mapByEmail, departments, positions);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(pathName)))
-        {
-            br.readLine();
-            String line;
-            while((line = br.readLine()) != null)
-            {
-                validation(line, mapByUsername, mapByEmail, accounts, departments, positions, importErrors);
-            }
-
-            if(!accounts.isEmpty())
-            {
-                accountRepository.createListAccount(accounts);
-            }
-
-            if (!importErrors.isEmpty()) {
-                String pathError = "src/main/java/com/vti/dto/output_error_account.csv";
-                exportFileCSV(importErrors, pathError);
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        String message = "";
-        if (importErrors.isEmpty()) {
-            message = "Import thành công";
-        } else if (accounts.isEmpty()) {
-            message = "Import ko thành công, đã xuất file lỗi tại src/main/java/com/vti/dto/output_error_account.csv";
-        } else {
-            message = "Import thành công " + accounts.size() + " accounts, " +
-                    "đã xuất lỗi ra file tại src/main/java/com/vti/dto/output_error_account.csv";
-        }
-
+        String message = this.importFileCSV(pathName, context, pathError);
         return message;
     }
 
-    private void exportFileCSV(List<ImportError> importErrors, String pathError)
+    @Override
+    public void exportFileError(List<ImportError<AccountCsv>> importErrors, String pathError)
     {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(pathError));
             bw.write("username,fullName,email,department_id,position_id,error_message");
             bw.newLine();
             for (ImportError error : importErrors) {
-                String ln = error.getLine() + " : " + String.join("|", error.getMessage());
+                String ln = error.getCsv() + " : " + String.join("|", error.getMessage());
                 bw.write(ln);
                 bw.newLine();
             }
@@ -126,8 +95,8 @@ public class AccountServiceImpl implements IAccountService {
         }
     }
 
-    private void validation(String line, Map<String, Account> mapByUsername, Map<String, Account> mapByEmail, List<Account> accounts,
-                            List<Department> departments, List<Position> positions, List<ImportError> importErrors)
+    @Override
+    public void validation(String line, AccountContext context, List<Account> entities, List<ImportError<AccountCsv>> importErrors)
     {
         List<String> errors = new ArrayList<>();
 
@@ -148,7 +117,7 @@ public class AccountServiceImpl implements IAccountService {
             errors.add("Username không được để trống");
         } else if (username.length() > 100) {
             errors.add("Username không được dài quá 100 ký tự");
-        } else if (mapByUsername.get(username) != null) {
+        } else if (context.getMapByUsername().get(username) != null) {
             errors.add("Username đã tồn tại trên hệ thống");
         }
 
@@ -164,7 +133,7 @@ public class AccountServiceImpl implements IAccountService {
             errors.add("Username không được dài quá 100 ký tự");
         } else if(!email.matches(EMAIL_REGEX)) {
             errors.add("Định dạng email không hợp lệ");
-        } else if (mapByEmail.get(email) != null) {
+        } else if (context.getMapByEmail().get(email) != null) {
             errors.add("Email đã tồn tại trên hệ thống");
         }
 
@@ -176,7 +145,7 @@ public class AccountServiceImpl implements IAccountService {
         }
         else {
             try {
-                for (Department de : departments) {
+                for (Department de : context.getDepartments()) {
                     if (de.getId() == Integer.parseInt(departmentId)) {
                         department = de;
                         break;
@@ -198,7 +167,7 @@ public class AccountServiceImpl implements IAccountService {
         }
         else {
             try {
-                for (Position po : positions) {
+                for (Position po : context.getPositions()) {
                     if (po.getId() == Integer.parseInt(positionId)) {
                         position = po;
                         break;
@@ -215,13 +184,19 @@ public class AccountServiceImpl implements IAccountService {
         if(errors.isEmpty())
         {
             Account account = new Account(username, fullName, email, department, position);
-            accounts.add(account);
-            mapByUsername.put(username, account);
-            mapByEmail.put(email, account);
+            entities.add(account);
+            context.getMapByUsername().put(username, account);
+            context.getMapByEmail().put(email, account);
         }
         else {
             ImportError importerError = new ImportError(line, errors);
             importErrors.add(importerError);
         }
     }
+
+    @Override
+    public void saveAll(List<Account> entities) {
+        accountRepository.createListAccount(entities);
+    }
+
 }

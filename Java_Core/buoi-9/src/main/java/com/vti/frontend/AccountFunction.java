@@ -62,7 +62,7 @@ public class AccountFunction {
         System.out.println("=== Import file CSV ===");
         System.out.println("Mời bạn nhập đường dẫn đến file:");
 
-        String pathName = scanner.nextLine();
+        String pathName = "E:\\VTI_IT\\Java_Core\\csv\\input_account.csv";
         String message = accountController.importAccountFromCSV(pathName);
         System.out.println(message);
     }
