@@ -11,4 +11,5 @@ public interface IPositionRepository {
     Position findById(Integer id);
     void create(PositionName name);
     void update(PositionName updateName, Integer id);
+    void delete(Integer id);
 }

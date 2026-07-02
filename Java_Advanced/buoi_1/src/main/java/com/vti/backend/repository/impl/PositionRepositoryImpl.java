@@ -1,6 +1,7 @@
 package com.vti.backend.repository.impl;
 
 import com.vti.backend.repository.IPositionRepository;
+import com.vti.entity.Department;
 import com.vti.entity.Position;
 import com.vti.enums.PositionName;
 import com.vti.utils.HibernateUtils;
@@ -71,6 +72,25 @@ public class PositionRepositoryImpl implements IPositionRepository {
             Position position = session.find(Position.class, id);
 
             position.setName(updateName);
+            session.getTransaction().commit();
+        }
+        catch (Exception e)
+        {
+            session.getTransaction().rollback();
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public void delete(Integer id) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        try
+        {
+            Position position = session.find(Position.class, id);
+            session.remove(position);
             session.getTransaction().commit();
         }
         catch (Exception e)

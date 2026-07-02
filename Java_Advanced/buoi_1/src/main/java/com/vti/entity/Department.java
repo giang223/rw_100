@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 
 public class Department {
     @Id
@@ -19,4 +18,12 @@ public class Department {
 
     @Column(name = "department_name", nullable = false, unique = true, length = 100)
     private String name;
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
