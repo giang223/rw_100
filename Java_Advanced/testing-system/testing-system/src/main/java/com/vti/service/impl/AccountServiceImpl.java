@@ -4,10 +4,12 @@ import com.vti.entity.Account;
 import com.vti.repository.IAccountRepository;
 import com.vti.service.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
+@Service
 public class AccountServiceImpl implements IAccountService {
     @Autowired
     private IAccountRepository repository;
