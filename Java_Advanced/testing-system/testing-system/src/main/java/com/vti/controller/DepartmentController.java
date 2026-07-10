@@ -1,6 +1,8 @@
 package com.vti.controller;
 
+import com.vti.dto.DepartmentDTO;
 import com.vti.entity.Department;
+import com.vti.form.DepartmentCreateOrUpdateForm;
 import com.vti.service.IDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,10 +24,15 @@ public class DepartmentController {
     }
 
     @GetMapping("/{idSearch}")
-    public ResponseEntity<Department> findById(@PathVariable(name = "idSearch") Integer id)
+    public ResponseEntity<DepartmentDTO> findById(@PathVariable(name = "idSearch") Integer id)
     {
-        Department department = departmentService.findById(id);
-        return new ResponseEntity<>(department, HttpStatus.OK);
+        return new ResponseEntity<>(departmentService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<DepartmentDTO> findByName(@RequestParam(name = "name") String name)
+    {
+        return new ResponseEntity<>(departmentService.findByName(name), HttpStatus.OK);
     }
 
     @DeleteMapping("/{idDelete}")
@@ -35,15 +42,15 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Department department) {
-        departmentService.create(department);
+    public ResponseEntity<String> create(@RequestBody DepartmentCreateOrUpdateForm form) {
+        departmentService.create(form);
         return new ResponseEntity<>("Tạo mới thành công", HttpStatus.CREATED);
     }
 
     @PutMapping("/{idUpdate}")
-    public ResponseEntity<String> update(@RequestBody Department department,
+    public ResponseEntity<String> update(@RequestBody DepartmentCreateOrUpdateForm form,
                                          @PathVariable(name = "idUpdate") Integer id) {
-        departmentService.update(department, id);
+        departmentService.update(form, id);
         return new ResponseEntity<>("Update thành công", HttpStatus.OK);
     }
 }

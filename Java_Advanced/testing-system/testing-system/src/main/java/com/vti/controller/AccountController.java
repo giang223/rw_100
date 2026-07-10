@@ -1,7 +1,9 @@
 package com.vti.controller;
 
+import com.vti.dto.AccountDTO;
 import com.vti.entity.Account;
 import com.vti.entity.Department;
+import com.vti.form.AccountCreateOrUpdateForm;
 import com.vti.service.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,17 +19,49 @@ public class AccountController {
     private IAccountService accountService;
 
     @GetMapping
-    public ResponseEntity<List<Account>> findAll()
+    public ResponseEntity<List<AccountDTO>> findAll()
     {
-        List<Account> accounts = accountService.findAll();
-        return new ResponseEntity<>(accounts, HttpStatus.OK);
+        return new ResponseEntity<>(accountService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{idSearch}")
-    public ResponseEntity<Account> findById(@PathVariable(name = "idSearch") Integer id)
+    public ResponseEntity<AccountDTO> findById(@PathVariable(name = "idSearch") Integer id)
     {
-        Account account = accountService.findById(id);
-        return new ResponseEntity<>(account, HttpStatus.OK);
+        return new ResponseEntity<>(accountService.findById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/search-username")
+    public ResponseEntity<AccountDTO> findByUsername(@RequestParam(name = "username") String username)
+    {
+        AccountDTO accountDTO = accountService.findByUsername(username);
+        return new ResponseEntity<>(accountDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/search-full-name")
+    public ResponseEntity<List<AccountDTO>> findAllByFullName(@RequestParam(name = "fullName") String fullName)
+    {
+        List<AccountDTO> accountDTOs = accountService.findAllByFullName(fullName);
+        return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+    }
+
+    @GetMapping("/search-and")
+    public ResponseEntity<AccountDTO> findByFullNameAndUsername(@RequestParam(name = "username") String username,
+                                                                      @RequestParam(name = "fullName") String fullName)
+    {
+        AccountDTO dto = accountService.findByFullNameAndUsername(fullName, username);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AccountDTO>> findByFullNameOrUsername(@RequestParam(name = "username") String username,
+                                                                      @RequestParam(name = "fullName") String fullName)
+    {
+        List<AccountDTO> dtos = accountService.findByFullNameOrUsername(fullName, username);
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+
     }
 
     @DeleteMapping("/{idDelete}")
@@ -37,15 +71,15 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Account account) {
-        accountService.create(account);
+    public ResponseEntity<String> create(@RequestBody AccountCreateOrUpdateForm form) {
+        accountService.create(form);
         return new ResponseEntity<>("Tạo mới thành công", HttpStatus.CREATED);
     }
 
     @PutMapping("/{idUpdate}")
-    public ResponseEntity<String> update(@RequestBody Account account,
+    public ResponseEntity<String> update(@RequestBody AccountCreateOrUpdateForm form,
                                          @PathVariable(name = "idUpdate") Integer id) {
-        accountService.update(account, id);
+        accountService.update(form, id);
         return new ResponseEntity<>("Update thành công", HttpStatus.OK);
     }
 }

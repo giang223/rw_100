@@ -28,7 +28,11 @@ public class Account {
 
     @ManyToOne
     @JoinColumn(name = "department_id")
-    private Department dep;
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "position_id")
+    private Position position;
 
     @Column(name = "create_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdDate;
@@ -40,7 +44,7 @@ public class Account {
                 ", username='" + username + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
-                ", dep=" + dep +
+                ", dep=" + department +
                 ", createdDate=" + createdDate +
                 '}';
     }

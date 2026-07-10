@@ -1,8 +1,11 @@
 package com.vti.service.impl;
 
+import com.vti.dto.DepartmentDTO;
 import com.vti.entity.Department;
+import com.vti.form.DepartmentCreateOrUpdateForm;
 import com.vti.repository.IDepartmentRepository;
 import com.vti.service.IDepartmentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,8 @@ public class DepartmentServiceImpl implements IDepartmentService {
     @Autowired
     private IDepartmentRepository repository;
 
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
     public List<Department> findAll() {
         List<Department> departments = repository.findAll();
@@ -21,9 +26,14 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     @Override
-    public Department findById(Integer id) {
+    public DepartmentDTO findById(Integer id) {
         Department department = repository.findById(id).get();
-        return department;
+        DepartmentDTO dto = null;
+        if(Objects.nonNull(department))
+        {
+            dto = modelMapper.map(department, DepartmentDTO.class);
+        }
+        return dto;
     }
 
     @Override
@@ -32,18 +42,36 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     @Override
-    public void create(Department department) {
+    public void create(DepartmentCreateOrUpdateForm form)
+    {
+        if(repository.existsByNameAndIdNot(form.getName(), null))
+        {
+            throw new RuntimeException("Department name exists");
+        }
+
+        Department department = new Department();
+        department.setName(form.getName());
+
         repository.save(department);
     }
 
     @Override
-    public void update(Department department, Integer id) {
-        Department departmentUpdate = repository.findById(id).orElse(null);
-        if (Objects.isNull(departmentUpdate)) {
-            throw new RuntimeException("ID not found!");
-        } else {
-            departmentUpdate.setName(department.getName());
-            repository.save(departmentUpdate);
+    public void update(DepartmentCreateOrUpdateForm form, Integer id) {
+        Department departmentUpdate = repository.findById(id).orElseThrow(() -> new RuntimeException("Department not found"));
+
+        departmentUpdate.setName(form.getName());
+
+        repository.save(departmentUpdate);
+    }
+
+    @Override
+    public DepartmentDTO findByName(String name) {
+        Department department = repository.findByName(name);
+        DepartmentDTO dto = null;
+        if(Objects.nonNull(department))
+        {
+            dto = modelMapper.map(department, DepartmentDTO.class);
         }
+        return dto;
     }
 }
